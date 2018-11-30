@@ -12,15 +12,42 @@ using System.Windows.Media.Imaging;
 
 namespace ColorProfiles
 {
-    class MainWindowViewModel: INotifyPropertyChanged
+    class MainWindowViewModel : INotifyPropertyChanged
     {
+        private ColorSpace _sourceColorSpace;
+        private ColorSpace _targetColorSpace;
+        private WriteableBitmap _image = new WriteableBitmap(new BitmapImage(new Uri("Images/widegamut.jpg", UriKind.Relative)));
+        private WriteableBitmap _convertedImage;
+
         public List<ColorSpace> ColorSpaceList { get; private set; }
 
-        public ColorSpace SourceColorSpace { get; set; }
-        public ColorSpace TargetColorSpace { get; set; }
+        public ColorSpace SourceColorSpace { get => _sourceColorSpace; set
+            {
+                _sourceColorSpace = value;
+                FirePropertyChanged(nameof(SourceColorSpace));
+            }
+        }
+        public ColorSpace TargetColorSpace { get => _targetColorSpace;
+            set
+            {
+                _targetColorSpace = value;
+                FirePropertyChanged(nameof(TargetColorSpace));
+            }
+        }
 
-        public WriteableBitmap Image { get; set; } = new WriteableBitmap(new BitmapImage(new Uri("Images/widegamut.jpg", UriKind.Relative)));
-        public WriteableBitmap ConvertedImage { get; set; }
+        public WriteableBitmap Image { get => _image; set
+            {
+                _image = value;
+                FirePropertyChanged(nameof(Image));
+            }
+        }
+        public WriteableBitmap ConvertedImage { get => _convertedImage;
+            set
+            {
+                _convertedImage = value;
+                FirePropertyChanged(nameof(ConvertedImage));
+            }
+        }
 
         public ICommand ConvertCommand { get; private set; }
         public ICommand ChooseImageCommand { get; private set; }
@@ -50,14 +77,13 @@ namespace ColorProfiles
 
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
-            
+
             try
             {
                 Image = new WriteableBitmap(new BitmapImage(new Uri(dialog.FileName)));
-                FirePropertyChanged(nameof(Image));
                 ConvertColorSpaces();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Invalid file format");
             }
@@ -68,8 +94,6 @@ namespace ColorProfiles
             RecalculateMatrices();
 
             ConvertedImage = new WriteableBitmap(Image);
-            FirePropertyChanged(nameof(ConvertedImage));
-
             int height = ConvertedImage.PixelHeight;
             int width = ConvertedImage.PixelWidth;
 
@@ -81,37 +105,39 @@ namespace ColorProfiles
             {
                 for (int y = 0; y < width; y++)
                 {
-                    Color color;
-                    int myPtr;
-                    unsafe
-                    {
-                        myPtr = (int)ptr + x * stride + y * 4;
-                        int colorData = *((int*)myPtr);
-                        color = Color.FromArgb(255, (byte)(colorData >> 16),
-                            (byte)(colorData >> 8),
-                            (byte)(colorData >> 0));
-                    }
-
-                    var vXYZ = SourceColorSpace.RGBToXYZ(color);
-                    Color newColor = TargetColorSpace.XYZToRGB(vXYZ);
-
-                    unsafe
-                    {
-                        myPtr = (int)ptr + x * stride + y * 4;
-                        int colorData = newColor.R << 16;
-                        colorData |= newColor.G << 8;
-                        colorData |= newColor.B << 0;
-
-                        *((int*)myPtr) = colorData;
-                    }
+                    CalculateColor(ptr, x, y, stride);
                 }
             });
 
             ConvertedImage.AddDirtyRect(new System.Windows.Int32Rect(0, 0, width, height));
             ConvertedImage.Unlock();
+        }
 
-            FirePropertyChanged(nameof(SourceColorSpace));
-            FirePropertyChanged(nameof(TargetColorSpace));
+        private void CalculateColor(IntPtr ptr, int x, int y, int stride)
+        {
+            Color color;
+            int myPtr;
+
+            unsafe
+            {
+                myPtr = (int)ptr + x * stride + y * 4;
+                int colorData = *((int*)myPtr);
+                color = Color.FromArgb(255, (byte)(colorData >> 16),
+                    (byte)(colorData >> 8),
+                    (byte)(colorData >> 0));
+            }
+
+            var vXYZ = SourceColorSpace.RGBToXYZ(color);
+            Color newColor = TargetColorSpace.XYZToRGB(vXYZ);
+
+            unsafe
+            {
+                int colorData = newColor.R << 16;
+                colorData |= newColor.G << 8;
+                colorData |= newColor.B << 0;
+
+                *((int*)myPtr) = colorData;
+            }
         }
 
         private void RecalculateMatrices()
