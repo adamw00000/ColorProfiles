@@ -8,31 +8,44 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-
-        <ComboBox ItemsSource="{Binding ColorSpaces}" SelectedItem="{Binding SourceColorSpace}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding ConvertCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </ComboBox>
-        <ComboBox ItemsSource="{Binding ColorSpaces}" Grid.Column="1" SelectedItem="{Binding TargetColorSpace}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding ConvertCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </ComboBox>
-
-        <Image Grid.Column="0" Grid.Row="1" Source="{Binding Image}"/>
-        <Image Grid.Column="1" Grid.Row="1" Source="{Binding ConvertedImage}"/>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <ComboBox ItemsSource="{Binding ColorSpaceList}" SelectedItem="{Binding SourceColorSpace}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding ConvertCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+            <local:ColorProfilePresenter Grid.Row="1" DataContext="{Binding SourceColorSpace}"/>
+            <Image Grid.Column="0" Grid.Row="2" Source="{Binding Image}"/>
+        </Grid>
+        
+        <Grid Grid.Column="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <ComboBox ItemsSource="{Binding ColorSpaceList}" SelectedItem="{Binding TargetColorSpace}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding ConvertCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+            <local:ColorProfilePresenter Grid.Row="1" DataContext="{Binding TargetColorSpace}"/>
+            <Image Grid.Row="2" Source="{Binding ConvertedImage}"/>
+        </Grid>
     </Grid>
 </Window>

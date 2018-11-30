@@ -12,13 +12,7 @@ namespace ColorProfiles
 {
     class MainWindowViewModel: INotifyPropertyChanged
     {
-        readonly ColorSpace sRGB = new SRGBColorSpace();
-        readonly ColorSpace wideGamut = new WideGamutColorSpace();
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        void FirePropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-        public List<ColorSpace> ColorSpaces { get; }
+        public List<ColorSpace> ColorSpaceList { get; private set; }
 
         public ColorSpace SourceColorSpace { get; set; }
         public ColorSpace TargetColorSpace { get; set; }
@@ -26,17 +20,21 @@ namespace ColorProfiles
         public WriteableBitmap Image { get; set; } = new WriteableBitmap(new BitmapImage(new Uri("Images/widegamut.jpg", UriKind.Relative)));
         public WriteableBitmap ConvertedImage { get; set; }
 
-        public ICommand ConvertCommand { get; }
+        public ICommand ConvertCommand { get; private set; }
 
         public MainWindowViewModel()
         {
-            ColorSpaces = new List<ColorSpace> { sRGB, wideGamut };
-            SourceColorSpace = sRGB;
-            TargetColorSpace = wideGamut;
-
-            ConvertCommand = new RelayCommand<object>((param) => ConvertColorSpaces());
+            InitializeBindings();
 
             ConvertColorSpaces();
+        }
+
+        private void InitializeBindings()
+        {
+            ColorSpaceList = new List<ColorSpace> { ColorSpaces.sRGB, ColorSpaces.wideGamut, ColorSpaces.custom };
+            SourceColorSpace = ColorSpaces.sRGB;
+            TargetColorSpace = ColorSpaces.wideGamut;
+            ConvertCommand = new RelayCommand<object>((param) => ConvertColorSpaces());
         }
 
         private void ConvertColorSpaces()
@@ -67,25 +65,28 @@ namespace ColorProfiles
                     }
 
                     var vXYZ = SourceColorSpace.RGBToXYZ(color);
-                    color = TargetColorSpace.XYZToRGB(vXYZ);
+                    Color newColor = TargetColorSpace.XYZToRGB(vXYZ);
 
                     unsafe
                     {
                         myPtr = (int)ptr + x * stride + y * 4;
-                        int colorData = color.R << 16;
-                        colorData |= color.G << 8;
-                        colorData |= color.B << 0;
+                        int colorData = newColor.R << 16;
+                        colorData |= newColor.G << 8;
+                        colorData |= newColor.B << 0;
 
                         *((int*)myPtr) = colorData;
                     }
-
-                    //ConvertedImage.SetPixel(x, y, color);
                 }
             });
 
             ConvertedImage.AddDirtyRect(new System.Windows.Int32Rect(0, 0, width, height));
-
             ConvertedImage.Unlock();
+
+            FirePropertyChanged(nameof(SourceColorSpace));
+            FirePropertyChanged(nameof(TargetColorSpace));
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        void FirePropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

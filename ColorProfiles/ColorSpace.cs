@@ -12,14 +12,39 @@ namespace ColorProfiles
     class ColorSpace
     {
         string Name { get; }
+#pragma warning disable IDE1006 // Naming Styles
+        public double xw { get; set; }
+        public double yw { get; set; }
+        public double xr { get; set; }
+        public double yr { get; set; }
+        public double xg { get; set; }
+        public double yg { get; set; }
+        public double xb { get; set; }
+        public double yb { get; set; }
+        public double gamma { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
 
+        public bool Editable { get; }
         readonly double[,] RGBToXYZMatrix;
         readonly double[,] XYZToRGBMatrix;
-        readonly double gamma;
 
-        protected ColorSpace(string name, double xw, double yw, double xr, double yr, double xg, double yg, double xb, double yb, double gamma)
+        protected ColorSpace(string name, bool editable, 
+            double xw, double yw, 
+            double xr, double yr, 
+            double xg, double yg, 
+            double xb, double yb, 
+            double gamma)
         {
             Name = name;
+            Editable = editable;
+            this.xw = xw;
+            this.yw = yw;
+            this.xr = xr;
+            this.yr = yr;
+            this.xg = xg;
+            this.yg = yg;
+            this.xb = xb;
+            this.yb = yb;
 
             this.gamma = gamma;
 
@@ -54,7 +79,7 @@ namespace ColorProfiles
 
         public Vector3D RGBToXYZ(Color c)
         {
-            double[] vRGB = { c.ScR, Math.Pow(c.G / 255d, gamma), Math.Pow(c.B / 255d, gamma) };
+            double[] vRGB = { Math.Pow(c.R / 255d, gamma), Math.Pow(c.G / 255d, gamma), Math.Pow(c.B / 255d, gamma) };
 
             var result = StarMath.multiply(RGBToXYZMatrix, vRGB);
             return new Vector3D(result[0], result[1], result[2]);
