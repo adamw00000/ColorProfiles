@@ -28,7 +28,7 @@ namespace ColorProfiles
         double[,] RGBToXYZMatrix;
         double[,] XYZToRGBMatrix;
 
-        protected ColorSpace(string name, bool editable, 
+        public ColorSpace(string name, bool editable, 
             double xw, double yw, 
             double xr, double yr, 
             double xg, double yg, 
