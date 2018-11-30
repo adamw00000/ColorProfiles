@@ -22,6 +22,7 @@ namespace ColorProfiles
     {
         public MainWindow()
         {
+            DataContext = new MainWindowViewModel();
             InitializeComponent();
         }
     }
