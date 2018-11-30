@@ -8,18 +8,29 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid Margin="5">
+
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.ColumnSpan="2">
+            <Button Command="{Binding ChooseImageCommand}">Change image</Button>
+            <Label Width="25"/>
+            <Button Command="{Binding ConvertCommand}">Recalculate</Button>
+        </StackPanel>
+        
+        <Grid Margin="5" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             
-            <ComboBox ItemsSource="{Binding ColorSpaceList}" SelectedItem="{Binding SourceColorSpace}">
+            <ComboBox ItemsSource="{Binding ColorSpaceList}" SelectedItem="{Binding SourceColorSpace}" Margin="5">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding ConvertCommand}"/>
@@ -30,14 +41,14 @@
             <Image Grid.Column="0" Grid.Row="2" Source="{Binding Image}"/>
         </Grid>
         
-        <Grid Grid.Column="1" Margin="5">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
-            <ComboBox ItemsSource="{Binding ColorSpaceList}" SelectedItem="{Binding TargetColorSpace}">
+
+            <ComboBox ItemsSource="{Binding ColorSpaceList}" SelectedItem="{Binding TargetColorSpace}" Margin="5">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding ConvertCommand}"/>

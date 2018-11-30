@@ -25,8 +25,8 @@ namespace ColorProfiles
 #pragma warning restore IDE1006 // Naming Styles
 
         public bool Editable { get; }
-        readonly double[,] RGBToXYZMatrix;
-        readonly double[,] XYZToRGBMatrix;
+        double[,] RGBToXYZMatrix;
+        double[,] XYZToRGBMatrix;
 
         protected ColorSpace(string name, bool editable, 
             double xw, double yw, 
@@ -48,6 +48,11 @@ namespace ColorProfiles
 
             this.gamma = gamma;
 
+            RecalculateMatrices();
+        }
+
+        public void RecalculateMatrices()
+        {
             double zr, zg, zb, zw;
             double Yw = 1;
             double Xw, Zw;
@@ -67,9 +72,9 @@ namespace ColorProfiles
 
             var vSrgb = StarMath.multiply(mXYZrgbInverted, vXYZw);
 
-            double[,] mSXSYSZrgb = { 
-                { vSrgb[0] * xr, vSrgb[1] * xg, vSrgb[2] * xb }, 
-                { vSrgb[0] * yr, vSrgb[1] * yg, vSrgb[2] * yb }, 
+            double[,] mSXSYSZrgb = {
+                { vSrgb[0] * xr, vSrgb[1] * xg, vSrgb[2] * xb },
+                { vSrgb[0] * yr, vSrgb[1] * yg, vSrgb[2] * yb },
                 { vSrgb[0] * zr, vSrgb[1] * zg, vSrgb[2] * zb }
             };
 

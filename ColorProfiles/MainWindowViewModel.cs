@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,11 +23,11 @@ namespace ColorProfiles
         public WriteableBitmap ConvertedImage { get; set; }
 
         public ICommand ConvertCommand { get; private set; }
+        public ICommand ChooseImageCommand { get; private set; }
 
         public MainWindowViewModel()
         {
             InitializeBindings();
-
             ConvertColorSpaces();
         }
 
@@ -35,10 +37,36 @@ namespace ColorProfiles
             SourceColorSpace = ColorSpaces.sRGB;
             TargetColorSpace = ColorSpaces.wideGamut;
             ConvertCommand = new RelayCommand<object>((param) => ConvertColorSpaces());
+            ChooseImageCommand = new RelayCommand<object>((param) => ChooseImage());
+        }
+
+        private void ChooseImage()
+        {
+            System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog()
+            {
+                Filter = "Images|*.jpg;*.jpeg;*.png;*.bmp",
+                InitialDirectory = System.IO.Directory.GetCurrentDirectory() + "\\Images"
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            
+            try
+            {
+                Image = new WriteableBitmap(new BitmapImage(new Uri(dialog.FileName)));
+                FirePropertyChanged(nameof(Image));
+                ConvertColorSpaces();
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Invalid file format");
+            }
         }
 
         private void ConvertColorSpaces()
         {
+            RecalculateMatrices();
+
             ConvertedImage = new WriteableBitmap(Image);
             FirePropertyChanged(nameof(ConvertedImage));
 
@@ -84,6 +112,14 @@ namespace ColorProfiles
 
             FirePropertyChanged(nameof(SourceColorSpace));
             FirePropertyChanged(nameof(TargetColorSpace));
+        }
+
+        private void RecalculateMatrices()
+        {
+            if (SourceColorSpace.Editable)
+                SourceColorSpace.RecalculateMatrices();
+            if (TargetColorSpace.Editable)
+                TargetColorSpace.RecalculateMatrices();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
