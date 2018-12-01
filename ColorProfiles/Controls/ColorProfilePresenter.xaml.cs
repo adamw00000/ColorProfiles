@@ -18,8 +18,28 @@ namespace ColorProfiles
     /// <summary>
     /// Interaction logic for ColorProfilePresenter.xaml
     /// </summary>
-    public partial class ColorProfilePresenter : UserControl
+    public partial class ColorProfilePresenter: UserControl
     {
+        public static DependencyProperty SaveCommandProperty = 
+            DependencyProperty.Register(nameof(SaveCommand), 
+                typeof(ICommand),
+                typeof(ColorProfilePresenter));
+        
+        public ICommand SaveCommand
+        {
+            get
+            {
+                MessageBox.Show("bbb");
+                return (ICommand)GetValue(SaveCommandProperty);
+            }
+
+            set
+            {
+                MessageBox.Show("ccc");
+                SetValue(SaveCommandProperty, value);
+            }
+        }
+
         public ColorProfilePresenter()
         {
             InitializeComponent();

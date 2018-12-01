@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColorProfiles"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="root">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -21,7 +22,7 @@
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="9*"/>
         </Grid.ColumnDefinitions>
-
+        
         <Label>White</Label>
         <Label Grid.Column="1">x:</Label>
         <TextBox Grid.Column="2" Text="{Binding Path=xw}" Margin="3" IsEnabled="{Binding Editable}"/>
@@ -48,5 +49,6 @@
 
         <Label Grid.Row="4">Gamma:</Label>
         <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Path=gamma}" Margin="3" IsEnabled="{Binding Editable}"/>
+        <Button Grid.Row="4" Grid.Column="4" Margin="3" Command="{Binding SaveCommand, ElementName=root}" CommandParameter="{Binding}" IsEnabled="{Binding Editable}">Save profile</Button>
     </Grid>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace ColorProfiles
         private WriteableBitmap _image = new WriteableBitmap(new BitmapImage(new Uri("Images/widegamut.jpg", UriKind.Relative)));
         private WriteableBitmap _convertedImage;
 
-        public List<ColorSpace> ColorSpaceList { get; private set; }
+        public ObservableCollection<ColorSpace> ColorSpaceList { get; private set; }
 
         public ColorSpace SourceColorSpace { get => _sourceColorSpace; set
             {
@@ -51,6 +52,7 @@ namespace ColorProfiles
 
         public ICommand ConvertCommand { get; private set; }
         public ICommand ChooseImageCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }
 
         public MainWindowViewModel()
         {
@@ -60,11 +62,30 @@ namespace ColorProfiles
 
         private void InitializeBindings()
         {
-            ColorSpaceList = new List<ColorSpace> { ColorSpaces.sRGB, ColorSpaces.wideGamut, ColorSpaces.custom };
+            ColorSpaceList = ColorSpaces.ColorSpaceList;
             SourceColorSpace = ColorSpaces.sRGB;
             TargetColorSpace = ColorSpaces.wideGamut;
             ConvertCommand = new RelayCommand<object>((param) => ConvertColorSpaces());
             ChooseImageCommand = new RelayCommand<object>((param) => ChooseImage());
+            SaveCommand = new RelayCommand<ColorSpace>((param) => SaveColorSpace(param));
+        }
+
+        private void SaveColorSpace(ColorSpace colorSpace)
+        {
+            string name = "placeholder";
+
+            ColorSpace newColorSpace = new ColorSpace(name, false,
+                colorSpace.xw, colorSpace.yw,
+                colorSpace.xr, colorSpace.yr,
+                colorSpace.xg, colorSpace.yg,
+                colorSpace.xb, colorSpace.yb,
+                colorSpace.gamma);
+            ColorSpaces.ColorSpaceList.Add(newColorSpace);
+
+            if (colorSpace == TargetColorSpace)
+                TargetColorSpace = newColorSpace;
+            else
+                SourceColorSpace = newColorSpace;
         }
 
         private void ChooseImage()

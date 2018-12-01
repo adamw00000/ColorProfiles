@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ColorProfiles"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
+        x:Name="window"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
@@ -37,7 +38,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ComboBox>
-            <local:ColorProfilePresenter Grid.Row="1" DataContext="{Binding SourceColorSpace}"/>
+            <local:ColorProfilePresenter Grid.Row="1" SaveCommand="{Binding DataContext.SaveCommand, ElementName=window}" DataContext="{Binding SourceColorSpace}"/>
             <Image Grid.Column="0" Grid.Row="2" Source="{Binding Image}"/>
         </Grid>
         
@@ -55,7 +56,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ComboBox>
-            <local:ColorProfilePresenter Grid.Row="1" DataContext="{Binding TargetColorSpace}"/>
+            <local:ColorProfilePresenter Grid.Row="1" SaveCommand="{Binding DataContext.SaveCommand, ElementName=window}" DataContext="{Binding TargetColorSpace}"/>
             <Image Grid.Row="2" Source="{Binding ConvertedImage}"/>
         </Grid>
     </Grid>
