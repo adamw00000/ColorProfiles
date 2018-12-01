@@ -6,27 +6,40 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using Newtonsoft.Json;
 using StarMathLib;
 
 namespace ColorProfiles
 {
     class ColorSpace
     {
+        [JsonProperty]
         string Name { get; }
 #pragma warning disable IDE1006 // Naming Styles
+        [JsonProperty]
         public double xw { get; set; }
+        [JsonProperty]
         public double yw { get; set; }
+        [JsonProperty]
         public double xr { get; set; }
+        [JsonProperty]
         public double yr { get; set; }
+        [JsonProperty]
         public double xg { get; set; }
+        [JsonProperty]
         public double yg { get; set; }
+        [JsonProperty]
         public double xb { get; set; }
+        [JsonProperty]
         public double yb { get; set; }
+        [JsonProperty]
         public double gamma { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
-
+        [JsonProperty]
         public bool Editable { get; }
+        [JsonProperty]
         double[,] RGBToXYZMatrix;
+        [JsonProperty]
         double[,] XYZToRGBMatrix;
 
         public ColorSpace(string name, bool editable, 

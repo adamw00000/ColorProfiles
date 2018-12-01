@@ -33,13 +33,11 @@ namespace ColorProfiles
         private void OKButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             DialogResult = true;
-            Close();
         }
 
         private void CancelButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             DialogResult = false;
-            Close();
         }
     }
 }

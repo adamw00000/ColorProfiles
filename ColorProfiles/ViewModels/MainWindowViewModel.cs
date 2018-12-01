@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,15 +21,16 @@ namespace ColorProfiles
         private ColorSpace _targetColorSpace;
         private WriteableBitmap _image = new WriteableBitmap(new BitmapImage(new Uri("Images/widegamut.jpg", UriKind.Relative)));
         private WriteableBitmap _convertedImage;
-
+        
         public ObservableCollection<ColorSpace> ColorSpaceList { get; private set; }
-
+        
         public ColorSpace SourceColorSpace { get => _sourceColorSpace; set
             {
                 _sourceColorSpace = value;
                 FirePropertyChanged(nameof(SourceColorSpace));
             }
         }
+
         public ColorSpace TargetColorSpace { get => _targetColorSpace;
             set
             {
@@ -53,6 +56,8 @@ namespace ColorProfiles
         public ICommand ConvertCommand { get; private set; }
         public ICommand ChooseImageCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
+        public ICommand SerializeCommand { get; private set; }
+        public ICommand DeserializeCommand { get; private set; }
 
         public MainWindowViewModel()
         {
@@ -68,11 +73,13 @@ namespace ColorProfiles
             ConvertCommand = new RelayCommand<object>((param) => ConvertColorSpaces());
             ChooseImageCommand = new RelayCommand<object>((param) => ChooseImage());
             SaveCommand = new RelayCommand<ColorSpace>((param) => SaveColorSpace(param));
+            SerializeCommand = new RelayCommand<object>(async (param) => await SerializeColorSpaces());
+            DeserializeCommand = new RelayCommand<object>((param) => DeserializeColorSpaces());
         }
 
         private void SaveColorSpace(ColorSpace colorSpace)
         {
-            string name = "placeholder";
+            string name = "User Color Space";
             InputDialog dialog = new InputDialog { Value = "User Color Space", Title = "Save color space" };
 
             var result = dialog.ShowDialog();
@@ -119,6 +126,9 @@ namespace ColorProfiles
 
         private void ConvertColorSpaces()
         {
+            if (SourceColorSpace == null || TargetColorSpace == null)
+                return;
+
             RecalculateMatrices();
 
             ConvertedImage = new WriteableBitmap(Image);
@@ -174,6 +184,40 @@ namespace ColorProfiles
                 SourceColorSpace.RecalculateMatrices();
             if (TargetColorSpace.Editable)
                 TargetColorSpace.RecalculateMatrices();
+        }
+
+        private async Task SerializeColorSpaces()
+        {
+            string serialized = JsonConvert.SerializeObject(ColorSpaces.ColorSpaceList);
+
+            using (StreamWriter writer = new StreamWriter("ColorSpaces.json"))
+            {
+                await writer.WriteAsync(serialized);
+                MessageBox.Show("Saving successful!");
+            }
+        }
+
+        private void DeserializeColorSpaces()
+        {
+            string serialized;
+
+            using (StreamReader reader = new StreamReader("ColorSpaces.json"))
+            {
+                serialized = reader.ReadToEnd();
+            }
+            
+            var collection = JsonConvert.DeserializeObject<ObservableCollection<ColorSpace>>(serialized);
+            
+            ColorSpaces.ColorSpaceList.Clear();
+            foreach (var colorSpace in collection)
+            {
+                ColorSpaces.ColorSpaceList.Add(colorSpace);
+            }
+
+            SourceColorSpace = ColorSpaceList[0];
+            TargetColorSpace = ColorSpaceList[1];
+
+            MessageBox.Show("Loading successful!");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

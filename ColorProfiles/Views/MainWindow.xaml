@@ -19,9 +19,13 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button Command="{Binding ChooseImageCommand}">Change image</Button>
+            <Button Command="{Binding ChooseImageCommand}" FontSize="14">Change image</Button>
             <Label Width="25"/>
-            <Button Command="{Binding ConvertCommand}">Recalculate</Button>
+            <Button Command="{Binding ConvertCommand}" FontSize="14">Recalculate</Button>
+            <Label Width="25"/>
+            <Button Command="{Binding SerializeCommand}" FontSize="14">Save color spaces</Button>
+            <Label Width="25"/>
+            <Button Command="{Binding DeserializeCommand}" FontSize="14">Load color spaces</Button>
         </StackPanel>
         
         <Grid Margin="5" Grid.Row="1">
