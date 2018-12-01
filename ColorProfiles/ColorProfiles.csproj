@@ -69,12 +69,19 @@
     <Compile Include="Controls\ColorProfilePresenter.xaml.cs">
       <DependentUpon>ColorProfilePresenter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\ColorSpace\ColorSpaces.cs" />
     <Compile Include="Models\ColorSpace\CustomColorSpace.cs" />
     <Compile Include="Models\Helpers\RelayCommand.cs" />
     <Compile Include="Models\ColorSpace\SRGBColorSpace.cs" />
     <Compile Include="Models\ColorSpace\WideGamutColorSpace.cs" />
     <Page Include="Controls\ColorProfilePresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="InputDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

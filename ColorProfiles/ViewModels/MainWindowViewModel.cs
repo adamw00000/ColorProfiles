@@ -73,6 +73,13 @@ namespace ColorProfiles
         private void SaveColorSpace(ColorSpace colorSpace)
         {
             string name = "placeholder";
+            InputDialog dialog = new InputDialog { Value = "User Color Space", Title = "Save color space" };
+
+            var result = dialog.ShowDialog();
+            if (result.HasValue && !result.Value)
+                return;
+
+            name = dialog.Value;
 
             ColorSpace newColorSpace = new ColorSpace(name, false,
                 colorSpace.xw, colorSpace.yw,
