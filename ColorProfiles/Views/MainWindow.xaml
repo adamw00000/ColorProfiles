@@ -23,9 +23,11 @@
             <Label Width="25"/>
             <Button Command="{Binding ConvertCommand}" FontSize="14">Recalculate</Button>
             <Label Width="25"/>
-            <Button Command="{Binding SerializeCommand}" FontSize="14">Save color spaces</Button>
+            <Button Command="{Binding SerializeCommand}" FontSize="14">Save color space list</Button>
             <Label Width="25"/>
-            <Button Command="{Binding DeserializeCommand}" FontSize="14">Load color spaces</Button>
+            <Button Command="{Binding DeserializeCommand}" FontSize="14">Load color space list</Button>
+            <Label Width="25"/>
+            <Button Command="{Binding SaveResultCommand}" FontSize="14">Save result image</Button>
         </StackPanel>
         
         <Grid Margin="5" Grid.Row="1">

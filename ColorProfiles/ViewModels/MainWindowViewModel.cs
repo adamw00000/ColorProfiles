@@ -58,6 +58,7 @@ namespace ColorProfiles
         public ICommand SaveCommand { get; private set; }
         public ICommand SerializeCommand { get; private set; }
         public ICommand DeserializeCommand { get; private set; }
+        public ICommand SaveResultCommand { get; private set; }
 
         public MainWindowViewModel()
         {
@@ -75,6 +76,7 @@ namespace ColorProfiles
             SaveCommand = new RelayCommand<ColorSpace>((param) => SaveColorSpace(param));
             SerializeCommand = new RelayCommand<object>(async (param) => await SerializeColorSpaces());
             DeserializeCommand = new RelayCommand<object>((param) => DeserializeColorSpaces());
+            SaveResultCommand = new RelayCommand<object>((param) => SaveResultImage());
         }
 
         private void SaveColorSpace(ColorSpace colorSpace)
@@ -218,6 +220,16 @@ namespace ColorProfiles
             TargetColorSpace = ColorSpaceList[1];
 
             MessageBox.Show("Loading successful!");
+        }
+
+        private void SaveResultImage()
+        {
+            using (FileStream stream = new FileStream("out.png", FileMode.Create))
+            {
+                PngBitmapEncoder encoder5 = new PngBitmapEncoder();
+                encoder5.Frames.Add(BitmapFrame.Create(ConvertedImage));
+                encoder5.Save(stream);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
