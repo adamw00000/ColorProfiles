@@ -117,7 +117,12 @@ namespace ColorProfiles
 
             try
             {
-                Image = new WriteableBitmap(new BitmapImage(new Uri(dialog.FileName)));
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(dialog.FileName);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                Image = new WriteableBitmap(bitmap);
                 ConvertColorSpaces();
             }
             catch
