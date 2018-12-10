@@ -69,9 +69,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdobeRGBColorSpace.cs" />
+    <Compile Include="CIERGBColorSpace.cs" />
     <Compile Include="Controls\ColorProfilePresenter.xaml.cs">
       <DependentUpon>ColorProfilePresenter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PALSECAMColorSpace.cs" />
     <Compile Include="Views\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>

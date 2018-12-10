@@ -7,7 +7,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         x:Name="window"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="600" Width="1000" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,15 +19,25 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button Command="{Binding ChooseImageCommand}" FontSize="14">Change image</Button>
+            <Button Command="{Binding ChooseImageCommand}" FontSize="14">
+                <Label Margin="3">Change image</Label>
+            </Button>
             <Label Width="25"/>
-            <Button Command="{Binding ConvertCommand}" FontSize="14">Recalculate</Button>
+            <Button Command="{Binding SaveResultCommand}" FontSize="14">
+                <Label Margin="3">Save result image</Label>
+            </Button>
             <Label Width="25"/>
-            <Button Command="{Binding SerializeCommand}" FontSize="14">Save color space list</Button>
+            <Button Command="{Binding ConvertCommand}" FontSize="14" Background="Blue">
+                <Label Margin="3" Foreground="White">Recalculate</Label>
+            </Button>
             <Label Width="25"/>
-            <Button Command="{Binding DeserializeCommand}" FontSize="14">Load color space list</Button>
+            <Button Command="{Binding SerializeCommand}" FontSize="14">
+                <Label Margin="3">Save color space list</Label>
+            </Button>
             <Label Width="25"/>
-            <Button Command="{Binding SaveResultCommand}" FontSize="14">Save result image</Button>
+            <Button Command="{Binding DeserializeCommand}" FontSize="14">
+                <Label Margin="3">Load color space list</Label>
+            </Button>
         </StackPanel>
         
         <Grid Margin="5" Grid.Row="1">

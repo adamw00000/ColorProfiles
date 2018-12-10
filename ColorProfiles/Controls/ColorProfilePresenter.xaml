@@ -49,6 +49,6 @@
 
         <Label Grid.Row="4">Gamma:</Label>
         <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Path=gamma}" Margin="3" IsEnabled="{Binding Editable}"/>
-        <Button Grid.Row="4" Grid.Column="4" Margin="3" Command="{Binding SaveCommand, ElementName=root}" CommandParameter="{Binding}" IsEnabled="{Binding Editable}">Save profile</Button>
+        <Button Grid.Row="4" Grid.Column="4" Margin="3" Command="{Binding SaveCommand, ElementName=root}" CommandParameter="{Binding}" IsEnabled="{Binding Editable}">Add profile to list</Button>
     </Grid>
 </UserControl>

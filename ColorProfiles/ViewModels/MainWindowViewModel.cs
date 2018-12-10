@@ -19,7 +19,7 @@ namespace ColorProfiles
     {
         private ColorSpace _sourceColorSpace;
         private ColorSpace _targetColorSpace;
-        private WriteableBitmap _image = new WriteableBitmap(new BitmapImage(new Uri("Images/widegamut.jpg", UriKind.Relative)));
+        private WriteableBitmap _image = new WriteableBitmap(new BitmapImage(new Uri("Images/mountain.jpg", UriKind.Relative)));
         private WriteableBitmap _convertedImage;
         
         public ObservableCollection<ColorSpace> ColorSpaceList { get; private set; }
@@ -120,7 +120,7 @@ namespace ColorProfiles
                 Image = new WriteableBitmap(new BitmapImage(new Uri(dialog.FileName)));
                 ConvertColorSpaces();
             }
-            catch (Exception)
+            catch
             {
                 MessageBox.Show("Invalid file format");
             }
@@ -192,7 +192,23 @@ namespace ColorProfiles
         {
             string serialized = JsonConvert.SerializeObject(ColorSpaces.ColorSpaceList);
 
-            using (StreamWriter writer = new StreamWriter("ColorSpaces.json"))
+            System.Windows.Forms.SaveFileDialog dialog = new System.Windows.Forms.SaveFileDialog
+            {
+                DefaultExt = "json",
+                Filter = "JSON Files|*.json",
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                FileName = "ColorSpaces.json"
+            };
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (Path.GetExtension(dialog.FileName).ToLower() != ".json")
+            {
+                MessageBox.Show("Invalid extension!");
+                return;
+            }
+
+            using (StreamWriter writer = new StreamWriter(dialog.FileName))
             {
                 await writer.WriteAsync(serialized);
                 MessageBox.Show("Saving successful!");
@@ -203,13 +219,42 @@ namespace ColorProfiles
         {
             string serialized;
 
-            using (StreamReader reader = new StreamReader("ColorSpaces.json"))
+            System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog
             {
-                serialized = reader.ReadToEnd();
+                Filter = "JSON Files|*.json",
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                FileName = "ColorSpaces.json"
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (Path.GetExtension(dialog.FileName).ToLower() != ".json")
+            {
+                MessageBox.Show("Invalid extension!");
+                return;
+            }
+
+            using (StreamReader reader = new StreamReader(dialog.FileName))
+            {
+                try
+                {
+                    serialized = reader.ReadToEnd();
+                }
+                catch
+                {
+                    MessageBox.Show("Loading failed!");
+                    return;
+                }
             }
             
             var collection = JsonConvert.DeserializeObject<ObservableCollection<ColorSpace>>(serialized);
-            
+            if (collection.Count == 0)
+            {
+                MessageBox.Show("Loading failed - list cannot be empty!");
+                return;
+            }
+
             ColorSpaces.ColorSpaceList.Clear();
             foreach (var colorSpace in collection)
             {
@@ -217,19 +262,42 @@ namespace ColorProfiles
             }
 
             SourceColorSpace = ColorSpaceList[0];
-            TargetColorSpace = ColorSpaceList[1];
+            if (collection.Count == 1)
+                TargetColorSpace = ColorSpaceList[0];
+            else
+                TargetColorSpace = ColorSpaceList[1];
 
             MessageBox.Show("Loading successful!");
         }
 
         private void SaveResultImage()
         {
-            using (FileStream stream = new FileStream("out.png", FileMode.Create))
+            System.Windows.Forms.SaveFileDialog dialog = new System.Windows.Forms.SaveFileDialog
+            {
+                DefaultExt = "png",
+                Filter = "PNG Files|*.png",
+                InitialDirectory = Directory.GetCurrentDirectory() + "\\Images",
+                FileName = "output.png"
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            if (Path.GetExtension(dialog.FileName).ToLower() != ".png")
+            {
+                MessageBox.Show("Invalid extension!");
+                return;
+            }
+
+            using (FileStream stream = new FileStream(dialog.FileName, FileMode.Create))
             {
                 PngBitmapEncoder encoder5 = new PngBitmapEncoder();
                 encoder5.Frames.Add(BitmapFrame.Create(ConvertedImage));
                 encoder5.Save(stream);
+                stream.Close();
             }
+
+            MessageBox.Show("Saving successful!");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
